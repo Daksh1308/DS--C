@@ -1,0 +1,123 @@
+Write a program to implement SIMPLE QUEUE and CIRCULAR
+QUEUE using arrays that performs following operations:
+a. INSERT
+b. DELETE
+c. DISPLAY
+
+
+#include <stdio.h>
+
+
+#define MAX_SIZE 5
+
+
+typedef struct {
+
+    int data[MAX_SIZE];
+
+    int front, rear;
+
+} Queue;
+
+
+void initQueue(Queue *q) {
+
+    q->front = q->rear = 0;
+
+}
+
+
+int isEmpty(Queue *q) {
+
+    return q->front == q->rear;
+
+}
+
+
+int isFull(Queue *q) {
+
+    return (q->rear + 1) % MAX_SIZE == q->front;
+
+}
+
+
+void insert(Queue *q, int element) {
+
+    if (isFull(q)) {
+
+        printf("Queue is full. Cannot insert %d.\n", element);
+
+        return;
+
+    }
+
+    q->data[q->rear] = element;
+
+    q->rear = (q->rear + 1) % MAX_SIZE;
+
+}
+
+
+int delete(Queue *q) {
+
+    if (isEmpty(q)) {
+
+        printf("Queue is empty. Cannot delete.\n");
+
+        return -1;
+
+    }
+
+    int element = q->data[q->front];
+
+    q->front = (q->front + 1) % MAX_SIZE;
+
+    return element;
+
+}
+
+
+void display(Queue *q) {
+
+    int i = q->front;
+
+    while (i != q->rear) {
+
+        printf("%d ", q->data[i]);
+
+        i = (i + 1) % MAX_SIZE;
+
+    }
+
+    printf("\n");
+
+}
+
+
+int main() {
+
+    Queue q;
+
+    initQueue(&q);
+
+
+    insert(&q, 1);
+
+    insert(&q, 2);
+
+    insert(&q, 3);
+
+    display(&q); // Output: 1 2 3
+
+
+    int deleted = delete(&q);
+
+    printf("Deleted: %d\n", deleted); // Output: 1
+
+
+    display(&q); // Output: 2 3
+
+
+    return 0;
+
+}
