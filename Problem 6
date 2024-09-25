@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define a node for the doubly linked list
+struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// a. Insert a node at the front of the linked list
+void insertAtFront(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head != NULL) {
+        (*head)->prev = newNode;
+        newNode->next = *head;
+    }
+    *head = newNode;
+    printf("%d inserted at the front.\n", data);
+}
+
+// b. Insert a node at the end of the linked list
+void insertAtEnd(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        struct Node* temp = *head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
+    }
+    printf("%d inserted at the end.\n", data);
+}
+
+// c. Delete the last node of the linked list
+void deleteLastNode(struct Node** head) {
+    if (*head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    struct Node* temp = *head;
+    if (temp->next == NULL) {  // Only one node in the list
+        free(temp);
+        *head = NULL;
+    } else {
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->prev->next = NULL;
+        free(temp);
+    }
+    printf("Last node deleted.\n");
+}
+
+// d. Delete a node before the specified position (1-based index)
+void deleteNodeBeforePosition(struct Node** head, int pos) {
+    if (pos <= 1 || *head == NULL || (*head)->next == NULL) {
+        printf("Invalid position or no node to delete.\n");
+        return;
+    }
+
+    struct Node* temp = *head;
+    for (int i = 1; i < pos - 1 && temp != NULL; i++) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL || temp->prev == NULL) {
+        printf("No node exists before the specified position.\n");
+    } else {
+        struct Node* nodeToDelete = temp->prev;
+        if (nodeToDelete->prev != NULL) {
+            nodeToDelete->prev->next = temp;
+        } else {
+            *head = temp;
+        }
+        temp->prev = nodeToDelete->prev;
+        free(nodeToDelete);
+        printf("Node before position %d deleted.\n", pos);
+    }
+}
+
+// Function to display the linked list
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    struct Node* temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    insertAtFront(&head, 10);
+    insertAtFront(&head, 20);
+    insertAtEnd(&head, 30);
+    insertAtEnd(&head, 40);
+
+    printf("Current list: ");
+    displayList(head);
+
+    deleteLastNode(&head);
+    printf("List after deleting the last node: ");
+    displayList(head);
+
+    deleteNodeBeforePosition(&head, 3);
+    printf("List after deleting node before position 3: ");
+    displayList(head);
+
+    return 0;
+}
