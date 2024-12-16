@@ -1,0 +1,113 @@
+ //The term "radix" refers to the base of a numbering system. In the context of sorting algorithms like Radix Sort, it represents the range of digits or characters in the data being sorted.
+
+Explanation of Radix:
+Numbering Systems:
+
+For a decimal system, the radix is 10 (digits 0 through 9).
+For a binary system, the radix is 2 (digits 0 and 1).
+For a hexadecimal system, the radix is 16 (digits 0 through 9 and letters A through F).
+Radix Sort:
+
+Radix Sort is a non-comparative sorting algorithm.
+It sorts integers (or strings) by processing individual digits or characters, one at a time, from the least significant to the most significant (or vice versa).
+For a base-10 system, each digit (0-9) is considered in each sorting pass.
+Key Idea:
+
+Group and sort items based on the current digit (or character) at a specific position.
+Repeatedly sort until all positions have been processed.
+For example:
+
+In the number 123, the radix is 10 (decimal system).
+During sorting, digits 3, 2, and 1 are individually sorted over multiple passes. //
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to encapsulate the Radix Sort logic
+typedef struct {
+    int* array;
+    int size;
+} RadixSort;
+
+// Function to get the maximum value in an array
+int getMax(int* array, int size) {
+    int max = array[0];
+    for (int i = 1; i < size; i++) {
+        if (array[i] > max)
+            max = array[i];
+    }
+    return max;
+}
+
+// Function to perform counting sort based on a specific digit
+void countingSort(int* array, int size, int exp) {
+    int* output = (int*)malloc(size * sizeof(int));
+    int count[10] = {0};
+
+    // Count occurrences of each digit
+    for (int i = 0; i < size; i++)
+        count[(array[i] / exp) % 10]++;
+
+    // Update count[i] to store the position of the digit in output[]
+    for (int i = 1; i < 10; i++)
+        count[i] += count[i - 1];
+
+    // Build the output array
+    for (int i = size - 1; i >= 0; i--) {
+        output[count[(array[i] / exp) % 10] - 1] = array[i];
+        count[(array[i] / exp) % 10]--;
+    }
+
+    // Copy the output array to array[], so it now contains sorted numbers
+    for (int i = 0; i < size; i++)
+        array[i] = output[i];
+
+    free(output);
+}
+
+// Method to sort the array using Radix Sort
+void radixSort(RadixSort* rs) {
+    int max = getMax(rs->array, rs->size);
+
+    // Perform counting sort for every digit
+    for (int exp = 1; max / exp > 0; exp *= 10) {
+        countingSort(rs->array, rs->size, exp);
+    }
+}
+
+// Function to print the array
+void printArray(int* array, int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+}
+
+// Main function
+int main() {
+    RadixSort rs;
+    printf("Enter the number of elements: ");
+    scanf("%d", &rs.size);
+
+    rs.array = (int*)malloc(rs.size * sizeof(int));
+    if (!rs.array) {
+        printf("Memory allocation failed\n");
+        return -1;
+    }
+
+    printf("Enter the elements: \n");
+    for (int i = 0; i < rs.size; i++) {
+        scanf("%d", &rs.array[i]);
+    }
+
+    printf("Original array: \n");
+    printArray(rs.array, rs.size);
+
+    radixSort(&rs);
+
+    printf("Sorted array: \n");
+    printArray(rs.array, rs.size);
+
+    free(rs.array);
+    return 0;
+}
